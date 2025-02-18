@@ -1,13 +1,17 @@
 #include <iostream>
 #include <future>
+#include <thread>
+#include <chrono>
 
-void foo(int i) {
+
+int foo(int i) {
 	std::cout << "I'm foo() i = " << i << '\n';
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	return i * 2;
 }
 
 int main() {
-	for(auto i = 0U; i < 32; ++i) {
-		std::async(std::launch::async, foo, i);
-	}
-
+	std::future<int> ftr = std::async(std::launch::async, foo, 21);
+	std::cout << "In main()\n";
+	std::cout << ftr.get() << '\n';
 }
