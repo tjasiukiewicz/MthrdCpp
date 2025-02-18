@@ -11,7 +11,7 @@ int foo(int i) {
 }
 
 int main() {
-	std::future<int> ftr = std::async(std::launch::async, foo, 21);
+	std::future<int> ftr = std::async(std::launch::async, foo, 21); // Tu jest 2 wątek...
 	std::cout << "In main()\n";
 	std::cout << ftr.get() << '\n';
 }
