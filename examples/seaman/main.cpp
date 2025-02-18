@@ -7,18 +7,40 @@ class SeaMan {
 public:
 	constexpr static int RoadSize = 20;
 	SeaMan()
-		: position{RoadSize / 2} {
+		: position{RoadSize / 2}, stop{false} {
+		thrLeft = std::thread(&SeaMan::changePosition, this, -1);
+		thrRight = std::thread(&SeaMan::changePosition, this, 1);
 	}
-
-	void showRoad() const {
-		std::cout << "|" << std::string(position, "*") << "|\n";
+	~SeaMan() {
+		stop = true; //  ???
+		thrRight.join();
+		thrLeft.join();
 	}
 
 private:
+	void showRoad() const {
+		// mtx ??
+		std::cout << "|" << std::string(position, '-') << "*" << std::string(RoadSize - position, '-') << "|\n";
+	}
+
+	void changePosition(int delta) {
+		while(not stop) {
+			if ((position == 0) or (position >= RoadSize)) {
+				stop = true;
+			}
+			{
+				// mtx?
+				position += delta;
+			}
+			std::this_thread::sleep_for(std::milliseconds(20));
+			showRoad();
+		}
+	}
 	int position;
 	std::thread thrLeft;
 	std::thread thrRight;
-	std::mutex mtx;
+	mutable std::mutex mtx;
+	bool stop;
 };
 
 int main() {
