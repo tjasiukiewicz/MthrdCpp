@@ -14,6 +14,13 @@ struct Executor {
 			now = next_point;
 		}
 	}
+
+	template<typename Duration, typename Function, typename... Args>
+	static void oneShoot(Duration duration, Function && func, Args... args) {
+		std::this_thread::sleep_for(duration);
+		func(std::forward<Args>(args)...);
+	}
+
 	static void doStop() {
 		Executor::stop = true;
 	}
@@ -29,14 +36,19 @@ void ping() {
 }
 
 int main() {
-	auto ftr = std::async(std::launch::async, [] {
+	auto ftr1 = std::async(std::launch::async, [] {
 			Executor::periodic(std::chrono::seconds(1), ping);
+	});
+
+	auto ftr2 = std::async(std::launch::async, [] {
+			Executor::oneShoot(std::chrono::seconds(5), []{ Executor::doStop(); });
 	});
 
 	for (auto i = 0U; i < 10; ++i) {
 		std::cout << "Work in main()\n";
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
-	Executor::doStop();
-	ftr.get();
+	//Executor::doStop();
+	ftr1.get();
+	ftr2.get();
 }
