@@ -4,6 +4,10 @@
 #include <future>
 
 struct Executor {
+	// No instance, only static.
+	Executor() = delete;
+	~Executor() = delete;
+
 	template<typename Duration, typename Function, typename... Args>
 	static void periodic(Duration duration, Function && func, Args... args) {
 		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
@@ -23,6 +27,10 @@ struct Executor {
 
 	static void doStop() {
 		Executor::stop = true;
+	}
+
+	static void doStart() {
+		Executor::stop = false;
 	}
 private:
 	static bool stop;
