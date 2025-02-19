@@ -69,7 +69,7 @@ void producer(ThStack<int>& th) {
 }
 
 void consumer(ThStack<int>& th) {
-	for (auto i = 0; i < 10; ++i) {
+	for (auto i = 0; i < 5; ++i) {
 		std::shared_ptr<int> sp;
 		sp = th.pop();
 		std::cout << "consumer: ";
@@ -83,7 +83,7 @@ void consumer(ThStack<int>& th) {
 }
 
 int main() {
-	ThStack<int> th;
+	ThStack<int> th{};
 	auto pth1 = std::thread(producer, std::ref(th));
 	auto cth1 = std::thread(consumer, std::ref(th));
 	auto cth2 = std::thread(consumer, std::ref(th));
