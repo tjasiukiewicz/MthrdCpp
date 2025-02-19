@@ -26,6 +26,7 @@ int main() {
 				std::cout << "ready    (complete)" << std::endl;
 				break;
 		}
-	} while(status != std::future_status::ready);
+	}
+	while(status != std::future_status::ready);
 	ftr.get();
 }
