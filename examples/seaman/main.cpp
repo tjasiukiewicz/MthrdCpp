@@ -20,20 +20,18 @@ public:
 
 private:
 	void showRoad() const {
-		{
-			std::lock_guard<std::mutex> _(mtx);
-			std::cout << "|" << std::string(position, '-') << "*" << std::string(RoadSize - position, '-') << "|\n";
-		}
+		std::lock_guard<std::mutex> _(mtx);
+		std::cout << "|" << std::string(position, '-') << "*" << std::string(RoadSize - position, '-') << "|\n";
 	}
 
 	void changePosition(int delta) {
 		while(not stop) {
-			if ((position == 0) or (position >= RoadSize)) {
-				stop = true;
-				break;
-			}
 			{
 				std::lock_guard<std::mutex> _(mtx);
+				if ((position == 0) or (position >= RoadSize)) {
+					stop = true;
+					break;
+				}
 				position += delta;
 			}
 			showRoad();
