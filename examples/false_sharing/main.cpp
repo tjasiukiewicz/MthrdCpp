@@ -39,9 +39,9 @@ int thread_sum(const std::vector<int> & vec) {
     // map
     for (auto i = 0U; i < thread_counter; ++i) {
     	    results[i] = std::async(std::launch::async,
-    	    	[](unsigned start, unsigned stop, const std::vector<int>& vec) {
+    	    	[&vec](unsigned start, unsigned stop) {
     			return std::accumulate(vec.cbegin() + start, vec.cbegin() + stop, 0);
-    	    	}, i * step, (i + 1) * step, std::cref(vec));
+    	    	}, i * step, (i + 1) * step);
     }
     
     // reduce
@@ -55,7 +55,7 @@ int thread_sum(const std::vector<int> & vec) {
 
 int main() {
     srand(time(NULL));
-    const auto num_elements = std::thread::hardware_concurrency() * 1024;
+    const auto num_elements = std::thread::hardware_concurrency() * 4096; // 16 cores, 32-bit int.
     std::vector<int> vec;
     vec.reserve(num_elements);
     fill_vec(vec, num_elements);
