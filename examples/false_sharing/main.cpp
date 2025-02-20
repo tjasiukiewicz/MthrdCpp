@@ -37,17 +37,25 @@ int thread_sum(const std::vector<int> & vec) {
     auto step = vec_size / thread_counter;
     std::future<int> results[thread_counter];
     // map
-    // TODO: Split and sum vector chunk to threads, via std::async(...)
+    for (auto i = 0U; i < thread_counter; ++i) {
+    	    results[i] = std::async(std::launch::async,
+    	    	[](unsigned start, unsigned stop, const std::vector<int>& vec) {
+    			return std::accumulate(vec.cbegin() + start, vec.cbegin() + stop, 0);
+    	    	}, i * step, (i + 1) * step, std::cref(vec));
+    }
     
     // reduce
-    // TODO: Sum all std::future results.
+    int sum = 0;
+    for(auto & ftr: results) {
+    	    sum += ftr.get();
+    } 
     
     return sum;
 }
 
 int main() {
     srand(time(NULL));
-    const auto num_elements = std::thread::hardware_concurrency() * 4000;
+    const auto num_elements = std::thread::hardware_concurrency() * 1024;
     std::vector<int> vec;
     vec.reserve(num_elements);
     fill_vec(vec, num_elements);
