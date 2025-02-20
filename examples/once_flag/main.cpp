@@ -2,9 +2,9 @@
 #include <thread>
 #include <mutex>
 
+std::once_flag flag;
 
 void worker() {
-    std::once_flag flag;
     std::call_once(flag, []{ std::cout << "Call me once!\n";});
     std::cout << "Work!\n";
 }

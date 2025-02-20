@@ -31,6 +31,17 @@ long other_fun(int z) {
 template<typename Func, typename... TT>
 void check_time(const string& message, Func func, TT&& ...tt) {
 	// TODO....
+
+	using namespace chrono;
+	cout << message << endl;
+
+	auto start_time = high_resolution_clock::now();
+	func(forward<TT>(tt)...);
+	auto end_time = high_resolution_clock::now();
+	
+	cout << "Exec time: " 
+		<< duration_cast<microseconds>(end_time - start_time).count()
+		<< " us.\n";
 }
 
 int main() {
