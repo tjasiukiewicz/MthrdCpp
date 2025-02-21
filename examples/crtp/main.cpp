@@ -2,17 +2,21 @@
 #include <vector>
 #include <string>
 
-// CRTP
-
 template<typename T>
 class InstancesRegister {
-public:
-	InstancesRegister(T * t) {
-		InstancesRegister<T>::instances.emplace_back(t);
+protected:
+	InstancesRegister() {
+		InstancesRegister<T>::instances.emplace_back(static_cast<T*>(this));
 	}
 
+public:
 	static std::vector<T*>& getInstances() {
 		return InstancesRegister::instances;
+	}
+
+	~InstancesRegister() {
+		std::vector<T*> & inst = InstancesRegister<T>::instances;
+		inst.erase(std::remove(inst.begin(), inst.end(), this), inst.end());
 	}
 private:
 	static std::vector<T*> instances;
@@ -21,10 +25,10 @@ private:
 template<typename T>
 std::vector<T*> InstancesRegister<T>::instances;
 
-class Airplane: public InstancesRegister<Airplane> { /// <--- CRTP: class X: public Y<X> { ... 
+class Airplane: public InstancesRegister<Airplane> { /// <--- CRTP: class X: public Y<X> {
 public:
 	explicit Airplane(const std::string& name_)
-		: InstancesRegister(this), name{name_} {
+		: name{name_} {
 	}
 	void info() const {
 		std::cout << "Airplane: " << name << '\n';
@@ -38,6 +42,7 @@ int main() {
 	{
 		Airplane a2("F15");
 	}
+
 
 	/*
 	for (auto a: {&a1, &a2}) {
