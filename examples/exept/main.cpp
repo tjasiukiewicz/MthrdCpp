@@ -7,7 +7,7 @@
 void foo(std::promise<int>& prm) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     try {
-        //throw std::runtime_error("Fake except!");
+        throw std::runtime_error("Fake except!");
         prm.set_value(42);
     } catch(...) {
         prm.set_exception(std::current_exception());
